@@ -1,0 +1,64 @@
+# ==========================
+# Python cache
+# ==========================
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ==========================
+# Virtual environments
+# ==========================
+
+venv/
+env/
+.venv/
+
+# ==========================
+# Jupyter
+# ==========================
+
+.ipynb_checkpoints/
+
+# ==========================
+# IDE / Editor files
+# ==========================
+
+.vscode/
+.idea/
+
+# ==========================
+# Operating system files
+# ==========================
+
+.DS_Store
+Thumbs.db
+
+# ==========================
+# Project generated outputs
+# ==========================
+
+outputs/
+FFT_plots/
+
+# ==========================
+# ERA5 downloaded datasets
+# (large NetCDF files)
+# ==========================
+
+data/era5/*.nc
+
+# ==========================
+# Raw sensor data
+# (optional - keep private)
+# ==========================
+
+data/sensor/log_files/
+data/sensor/csv_files/*.csv
+
+# ==========================
+# Temporary files
+# ==========================
+
+*.tmp
+*.log
