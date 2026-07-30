@@ -184,14 +184,17 @@ def FourierTransform(df, col, tinit, tfin, YEAR, MONTH, DAY):
     plt.title(f"RAW ZTD Power Spectrum for {DAY}-{MONTH}-{YEAR}")
     plt.grid()
 
-    save_dir="FFT_plots"
+    save_dir = "outputs/plots/FFT"
+
     save_dir = Path(save_dir)
     save_dir.mkdir(parents=True, exist_ok=True)
 
-    filename = f"FFT_{col}_{tinit.replace(':','')}-{tfin.replace(':','')}-{DAY}_{MONTH}_{YEAR}.pdf"
+    filename = f"FFT_{col}_{tinit.replace(':','')}-{tfin.replace(':','')}_{DAY}{MONTH}{YEAR}.pdf"
+
     save_path = save_dir / filename
 
     plt.savefig(save_path, format="pdf", bbox_inches="tight")
+
     print(f"Saved FFT plot -> {save_path}")
 
     return freq, power

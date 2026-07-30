@@ -38,13 +38,13 @@ Ioannis Tsormpatzoglou
 __author__ = "Ioannis Tsormpatzoglou"
 __version__ = "3.0"
 
-from src.physics import *
-from src.data_loading import *
-from src.constants import *
-from src.paths import *
-from src.config import *
-from src.analysis import *
-from src.plotting import *
+
+from src.analysis import compute_pwv_era5, compute_pwv_sensor, compute_cape, compute_metpy_cape, save_statistics_csv, bias_correction
+from src.data_loading import load_gnss_data, load_sensor_data, extract_sensor_data, extract_era5_data, FourierTransform
+from src.paths import DATA_SENSOR_DIR, ERA5_DIR
+from src.plotting import era5_sensor_comparison_subplots, plot_pwv_scatter
+from src.statistics import comparison_statistics
+from src.config import YEAR, MONTH, SENSORDATAEXISTS
 
 def run(DAY, config, era5_files):
 
@@ -74,14 +74,25 @@ def run(DAY, config, era5_files):
     cape_metpy = compute_metpy_cape(ds_era5)
     df_era5 = df_era5.join(cape, how = 'inner')
     df_era5 = df_era5.join(cape_metpy, how = 'inner')
-    print(df_era5)
+    #print(df_era5)
 
 
     if SENSORDATAEXISTS: 
         df_sens_raw, df_sensor_h   = compute_pwv_sensor(df_gnss, df_sensor)
         df_era5_sensor             = df_era5.join(df_sensor_h, how = 'inner')
+        df_era5_sensor             = bias_correction(df_era5_sensor, "PWV_sensor_mm", "PWV_ERA5_mm")
+
+        #print(df_era5_sensor[["PWV_sensor_mm", "PWV_ERA5_mm"]])
+        
+        # Save statistics to csv:
+        stats_pwv = comparison_statistics(df_era5_sensor, "PWV_sensor_mm", "PWV_ERA5_mm")
+        filename = f"statistics_{DATE_TAG}.csv"
+        save_statistics_csv(stats_pwv, filename)
+
         FourierTransform(df_sens_raw, "ZTD_m", "12:00", "22:00", YEAR, MONTH, DAY)
         era5_sensor_comparison_subplots(df_sens_raw, df_era5, df_era5_sensor)
+        plot_pwv_scatter(df_era5_sensor, "PWV_sensor_mm", "PWV_ERA5_mm")
+        
         return df_era5, df_sens_raw, df_sensor_h, df_era5_sensor
     
     return df_era5

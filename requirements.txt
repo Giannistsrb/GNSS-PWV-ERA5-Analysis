@@ -6,3 +6,4 @@ matplotlib
 scipy
 metpy
 cdsapi
+scikit-learn

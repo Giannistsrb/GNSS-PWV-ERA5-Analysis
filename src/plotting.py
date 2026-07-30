@@ -32,6 +32,9 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
+from scipy.stats import linregress
+import numpy as np
+
 OUTPUT_DIR = Path("outputs")
 PLOTS_DIR = OUTPUT_DIR / "plots"
 
@@ -112,9 +115,10 @@ def era5_sensor_comparison_subplots(df_gnss, df_era5, df_sensor_era5):
     ax4.set_ylabel("ZWD (m)")
     ax4.legend()
 
-    ax5.plot(df_sensor_era5.index, df_sensor_era5["PWV_sensor_mm"], label="Sensor")
-    ax5.plot(df_sensor_era5.index, df_sensor_era5["PWV_ERA5_mm"],   label="ERA5")
-    ax5.set_title("PWV - ERA5 vs Sensor")
+    ax5.plot(df_sensor_era5.index, df_sensor_era5["PWV_sensor_mm"],           label="Sensor")
+    ax5.plot(df_sensor_era5.index, df_sensor_era5["PWV_ERA5_mm"],             label="ERA5")
+    ax5.plot(df_sensor_era5.index, df_sensor_era5["PWV_ERA5_mm_corrected"],   label="ERA5-Bias correction", color = "black")
+    ax5.set_title("PWV - ERA5 vs Sensor & Bias Correction")
     ax5.set_ylabel("PWV (m)")
     ax5.legend()
     
@@ -131,6 +135,78 @@ def era5_sensor_comparison_subplots(df_gnss, df_era5, df_sensor_era5):
 
     plt.savefig(save_path, dpi=300, bbox_inches="tight")
     plt.close()
+
+def plot_pwv_scatter(df, reference_col, model_col):
+
+    date_str = df.index[0].strftime("%d%m%Y")
+
+    x = df[reference_col]
+    y = df[model_col]
+
+    # Linear Regression:
+    slope, intercept, r_value, p_value, std_err = linregress(x, y)
+
+    plt.figure(figsize = (7, 7))
+
+    plt.scatter(x, y, label = "ERA5 vs GNSS")
+
+    # Regression line: 
+    x_line = np.linspace(x.min(), x.max(), 100)
+    y_line = slope * x_line + intercept
+
+    plt.plot(x_line, y_line, label = f"Linear fit: y={slope:.2f}x+{intercept:.2f}")
+    plt.plot(x_line, x_line, linestyle = "--", label = "Perfect agreement (y=x)")
+
+    plt.xlabel("GNSS PWV (mm)")
+    plt.ylabel("ERA5 PWV (mm)")
+    plt.legend()
+    plt.grid(True)
+
+    plt.title(f"GNSS PWV vs ERA5 PWV - {date_str}")
+
+    save_path = PLOTS_DIR / f"PWV_GNSS_vs_ERA5_scatter_{date_str}.pdf"
+
+    plt.savefig(save_path, dpi = 300, bbox_inches = "tight")
+
+    plt.close()
+
+    print(f"Saved scatter plot --> {save_path}")
+
+def plot_pwv_scatter_all_days(df, reference_col, model_col):
+
+    date_str = df.index[0].strftime("%d%m%Y")
+
+    x = df[reference_col]
+    y = df[model_col]
+
+    # Linear Regression:
+    slope, intercept, r_value, p_value, std_err = linregress(x, y)
+
+    plt.figure(figsize = (7, 7))
+
+    plt.scatter(x, y, label = "ERA5 PWV samples")
+
+    # Regression line: 
+    x_line = np.linspace(x.min(), x.max(), 100)
+    y_line = slope * x_line + intercept
+
+    plt.plot(x_line, y_line, label = f"Linear fit: y={slope:.2f}x+{intercept:.2f}")
+    plt.plot(x_line, x_line, linestyle = "--", label = "Perfect agreement (y=x)")
+
+    plt.xlabel("GNSS PWV (mm)")
+    plt.ylabel("ERA5 PWV (mm)")
+    plt.legend()
+    plt.grid(True)
+
+    plt.title(f"GNSS PWV vs ERA5 PWV - All Data")
+
+    save_path = PLOTS_DIR / f"PWV_GNSS_vs_ERA5_scatter_all_data.pdf"
+
+    plt.savefig(save_path, dpi = 300, bbox_inches = "tight")
+
+    plt.close()
+
+    print(f"Saved scatter plot --> {save_path}")
 
 
      

@@ -35,6 +35,8 @@ from src.plotting import *
 from src.analysis import *
 from src.data_loading import *
 
+df_all_days = []
+
 if __name__ == "__main__":
     
     for DAY in CONFIG["DAYS"]:
@@ -54,8 +56,14 @@ if __name__ == "__main__":
 
         if SENSORDATAEXISTS:
             df_era5, df_sens_raw, df_sensor_h, df_era5_sensor = run(DAY, CONFIG, era5_files)
+            df_all_days.append(df_era5_sensor)
         else:
             df_era5 = run(DAY, CONFIG, era5_files)
+
+    df_all_days = pd.concat(df_all_days)
+    plot_pwv_scatter_all_days(df_all_days, "PWV_sensor_mm", "PWV_ERA5_mm")
+
+
 
 
     

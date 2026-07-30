@@ -172,6 +172,29 @@ def compute_metpy_cape(ds):
 
     return pd.DataFrame(cape_values, index=time, columns=["CAPE_MetPy_J_kg"])
 
+def save_statistics_csv(stats, filename):
+
+    from src.paths import TABLES_DIR
+
+    save_path = TABLES_DIR / filename
+
+    stats.to_csv(save_path)
+
+    print(f"Saved statistics -> {save_path}")
+
+def bias_correction(df, reference_col, model_col):
+
+    bias = (df[model_col] - df[reference_col]).mean()
+
+    corrected = df[model_col] - bias
+
+    df[f"{model_col}_corrected"] = corrected
+
+    print("\nBias correction: ")
+    print(f"Original bias: {bias:.3f} mm")
+
+    return df
+
 
 
 
