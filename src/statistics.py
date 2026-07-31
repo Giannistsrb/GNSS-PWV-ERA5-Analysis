@@ -11,6 +11,8 @@ Ioannis Tsormpatzoglou
 import numpy as np
 import pandas as pd
 
+from src.paths import TABLES_DIR
+
 def bias(reference, model):
     return np.mean(model - reference)
 
@@ -56,5 +58,18 @@ def comparison_statistics(df, reference_column, model_column):
 
     }
 
+    return results
 
-    return pd.DataFrame(results, index=[model_column])
+def save_statistics_summary(results, filename):
+
+    df = pd.DataFrame(results).set_index("Day")
+
+    print("STATISTICS SUMMARY:")
+    print(df)
+
+    save_path = TABLES_DIR / filename
+
+    df.to_csv(save_path)
+
+    print(f"Saved statistics summary ---> {save_path}")
+

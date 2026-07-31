@@ -30,12 +30,16 @@ __version__ = "3.0"
 
 from src.config import CONFIG, SENSORDATAEXISTS, CALLFORDATA, HOURLY_TIME, AREA
 from src.era5_api import era5_api_call
+from src.statistics import comparison_statistics, save_statistics_summary
 from src.pipeline import run
 from src.plotting import *
 from src.analysis import *
 from src.data_loading import *
 
-df_all_days = []
+# All data:
+df_all_days             = []
+statistics_results      = []
+statistics_bias_results = []
 
 if __name__ == "__main__":
     
@@ -57,11 +61,25 @@ if __name__ == "__main__":
         if SENSORDATAEXISTS:
             df_era5, df_sens_raw, df_sensor_h, df_era5_sensor = run(DAY, CONFIG, era5_files)
             df_all_days.append(df_era5_sensor)
+
+            # Raw statistics:
+            stats_raw        = comparison_statistics(df_era5_sensor, "PWV_sensor_mm", "PWV_ERA5_mm")
+            stats_raw["Day"] = f"{DAY}-{CONFIG['MONTH']}-{CONFIG['YEAR']}"
+            statistics_results.append(stats_raw)
+
+            # Biased statistics: 
+            stats_biased        = comparison_statistics(df_era5_sensor, "PWV_sensor_mm", "PWV_ERA5_mm_corrected")
+            stats_biased["Day"] = f"{DAY}-{CONFIG['MONTH']}-{CONFIG['YEAR']}"
+            statistics_bias_results.append(stats_biased)
+            
         else:
             df_era5 = run(DAY, CONFIG, era5_files)
 
+    # All days:
     df_all_days = pd.concat(df_all_days)
     plot_pwv_scatter_all_days(df_all_days, "PWV_sensor_mm", "PWV_ERA5_mm")
+    save_statistics_summary(statistics_results, "statistics_raw_summary.csv")
+    save_statistics_summary(statistics_bias_results, "statistics_summary_biased.csv")
 
 
 
