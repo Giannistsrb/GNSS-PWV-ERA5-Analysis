@@ -35,26 +35,13 @@ env/
 Thumbs.db
 
 # ==========================
-# Project generated outputs
-# ==========================
-
-outputs/
-FFT_plots/
-
-# ==========================
 # ERA5 downloaded datasets
 # (large NetCDF files)
 # ==========================
 
 data/era5/*.nc
+data/sensor/log_files/*.log
 
-# ==========================
-# Raw sensor data
-# (optional - keep private)
-# ==========================
-
-data/sensor/log_files/
-data/sensor/csv_files/*.csv
 
 # ==========================
 # Temporary files
