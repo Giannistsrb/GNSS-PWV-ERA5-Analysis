@@ -23,6 +23,7 @@ import pandas as pd
 from src.data_loading import extract_era5_data
 from src.physics import *
 from src.config import *
+from src.paths import TABLES_DIR
 
 def compute_pwv_era5(ds):
 
@@ -174,13 +175,12 @@ def compute_metpy_cape(ds):
 
 def save_statistics_csv(stats, filename):
 
-    from src.paths import TABLES_DIR
-
     save_path = TABLES_DIR / filename
 
     stats.to_csv(save_path)
 
     print(f"Saved statistics -> {save_path}")
+
 
 def bias_correction(df, reference_col, model_col):
 
@@ -194,6 +194,8 @@ def bias_correction(df, reference_col, model_col):
     print(f"Original bias: {bias:.3f} mm")
 
     return df
+
+
 
 
 

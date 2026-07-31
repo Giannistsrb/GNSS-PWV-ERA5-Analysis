@@ -81,14 +81,7 @@ def run(DAY, config, era5_files):
         df_sens_raw, df_sensor_h   = compute_pwv_sensor(df_gnss, df_sensor)
         df_era5_sensor             = df_era5.join(df_sensor_h, how = 'inner')
         df_era5_sensor             = bias_correction(df_era5_sensor, "PWV_sensor_mm", "PWV_ERA5_mm")
-
-        #print(df_era5_sensor[["PWV_sensor_mm", "PWV_ERA5_mm"]])
         
-        # Save statistics to csv:
-        stats_pwv = comparison_statistics(df_era5_sensor, "PWV_sensor_mm", "PWV_ERA5_mm")
-        filename = f"statistics_{DATE_TAG}.csv"
-        save_statistics_csv(stats_pwv, filename)
-
         FourierTransform(df_sens_raw, "ZTD_m", "12:00", "22:00", YEAR, MONTH, DAY)
         era5_sensor_comparison_subplots(df_sens_raw, df_era5, df_era5_sensor)
         plot_pwv_scatter(df_era5_sensor, "PWV_sensor_mm", "PWV_ERA5_mm")
